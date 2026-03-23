@@ -47,9 +47,22 @@ app = FastAPI(
 
 # Configure CORS
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
+# Violently clean up the origins to ensure no quotes, spaces, or trailing slashes mess it up
+clean_origins = []
+for origin in allowed_origins:
+    cleaned = origin.strip(' "\'/') # Removes spaces, quotes, and trailing slashes
+    if cleaned:
+        # Re-add the necessary format just in case
+        clean_origins.append(cleaned if cleaned.startswith("http") else f"https://{cleaned}")
+
+# Just in case nothing valid parsed, fallback to wildcard
+if not clean_origins:
+    clean_origins = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in allowed_origins],
+    allow_origins=clean_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
