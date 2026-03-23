@@ -27,9 +27,16 @@ def get_embedding_function():
     global _embedding_function
     if _embedding_function is None:
         print(f"⏳ Loading embedding model: {EMBEDDING_MODEL}...")
+        # Ensure we specifically pass the API key so it doesn't look for Google Cloud ADC
+        import os
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise ValueError("GOOGLE_API_KEY environment variable not found")
+            
         _embedding_function = GoogleGenerativeAIEmbeddings(
             model=EMBEDDING_MODEL,
-            google_api_key=os.getenv("GOOGLE_API_KEY")
+            google_api_key=api_key,
+            client_options={"api_key": api_key} # Extra enforcement to prevent ADC fallback
         )
         print(f"✅ Embedding model loaded: {EMBEDDING_MODEL}")
     return _embedding_function
