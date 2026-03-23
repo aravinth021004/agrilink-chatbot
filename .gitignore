@@ -1,5 +1,3 @@
-# Ignore local knowledge base files
-knowledge/*
 chatbot/
 chroma_db/
 # Ignore environment variable files
