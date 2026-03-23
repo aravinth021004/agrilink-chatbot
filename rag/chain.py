@@ -1,11 +1,11 @@
 """
-RAG chain: retrieval + Google Gemini LLM for generating responses.
+RAG chain: retrieval + Groq LLM for generating responses.
 """
 
 import os
 from typing import AsyncGenerator
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema import HumanMessage, AIMessage
 from langchain.schema.output_parser import StrOutputParser
@@ -44,17 +44,16 @@ def _build_chat_prompt():
 
 
 def _get_llm():
-    """Get the Google Gemini LLM instance."""
-    api_key = os.getenv("GOOGLE_API_KEY")
+    """Get the Groq LLM instance."""
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        raise ValueError("GOOGLE_API_KEY environment variable is not set")
+        raise ValueError("GROQ_API_KEY environment variable is not set")
 
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash",
-        google_api_key=api_key,
+    return ChatGroq(
+        model="llama-3.3-70b-versatile",
+        groq_api_key=api_key,
         temperature=0.3,
-        max_output_tokens=512,
-        convert_system_message_to_human=True,
+        max_tokens=512,
     )
 
 
