@@ -1,0 +1,8 @@
+# .dockerignore
+.env
+chatbot/
+__pycache__/
+*.pyc
+*.pyo
+chroma_db/
+.git/
