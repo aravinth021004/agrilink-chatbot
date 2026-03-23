@@ -6,7 +6,7 @@ import os
 import chromadb
 from chromadb.config import Settings
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import SentenceTransformerEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 from .embeddings import load_and_chunk_documents
 
@@ -14,8 +14,8 @@ from .embeddings import load_and_chunk_documents
 # Persist directory for ChromaDB
 PERSIST_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "chroma_db")
 
-# Embedding model (runs locally, no API cost)
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+# Embedding model (runs via API, uses almost zero local RAM)
+EMBEDDING_MODEL = "models/gemini-embedding-001"
 
 # Singleton
 _vector_store = None
@@ -27,8 +27,9 @@ def get_embedding_function():
     global _embedding_function
     if _embedding_function is None:
         print(f"⏳ Loading embedding model: {EMBEDDING_MODEL}...")
-        _embedding_function = SentenceTransformerEmbeddings(
-            model_name=EMBEDDING_MODEL
+        _embedding_function = GoogleGenerativeAIEmbeddings(
+            model=EMBEDDING_MODEL,
+            google_api_key=os.getenv("GOOGLE_API_KEY")
         )
         print(f"✅ Embedding model loaded: {EMBEDDING_MODEL}")
     return _embedding_function
